@@ -1,11 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <h1>Map</h1>
 <div id="map" style="height: 500px;"></div>
 <script>
-    var map = L.map('map').setView([51.505, -0.09], 13);
+    // Initialize the map
+    var map = L.map('map').setView([52.5200, 13.4050], 10);  // Centered on Berlin
+
+    // Add the base tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19
     }).addTo(map);
+
+    // Parse the GeoJSON data passed from Flask
+    var geojsonData = {{ geojson | tojson | safe }};
+
+    // Add the GeoJSON layer to the map
+    L.geoJSON(geojsonData).addTo(map);
 </script>
 {% endblock %}

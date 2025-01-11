@@ -1,5 +1,9 @@
 import sqlite3
 import hashlib
+import pandas as pd
+import geopandas as gpd
+from shapely import wkt
+import json
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
@@ -26,7 +30,15 @@ def hash_password(password):
 # Routes
 @app.route('/')
 def home():
-    return render_template('map.html')
+    with open('output.geojson', 'r') as f:
+        geojson = json.load(f)
+    return render_template('map.html', geojson=geojson)
+
+@app.route('/map')
+def map_view():
+    with open('output.geojson', 'r') as f:
+        geojson = json.load(f)
+    return render_template('map.html', geojson=geojson)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -71,9 +83,7 @@ def logout():
     session.pop('user_id', None)
     return render_template('_success.html', message="Logged out successfully.")
 
-@app.route('/map')
-def map_view():
-    return render_template('map.html')
+
 
 if __name__ == '__main__':
     init_db()  # Initialize database schema
